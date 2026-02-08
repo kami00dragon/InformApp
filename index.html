@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InformApp - Plataforma Global</title>
+    <style>
+        :root {
+            --bg-app: #eef1f5;
+            --card-bg: #ffffff;
+            --text-main: #1a1a1a;
+            --text-sub: #666666;
+            --brand-color: #2c3e50;
+            --brand-accent: #e67e22;
+            --border: #d1d9e6;
+            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-main);
+            background-color: var(--bg-app);
+            padding-bottom: 100px;
+        }
+
+        /* --- HEADER (Sin Logo) --- */
+        header {
+            background: var(--card-bg);
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Centrado simple ya que no hay logo */
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+
+        .brand-text { text-align: center; }
+        h1 { margin: 0; font-size: 1.4rem; font-weight: 800; color: var(--brand-color); letter-spacing: -0.5px; }
+        .subtitle { font-size: 0.75rem; color: var(--text-sub); display: block; font-weight: normal; margin-top: 4px; }
+
+        /* --- RELOJES --- */
+        #world-clock-section {
+            background: #2c3e50; color: #fff; padding: 15px 10px;
+            overflow-x: auto; white-space: nowrap;
+            -webkit-overflow-scrolling: touch; scrollbar-width: none;
+        }
+        #world-clock-section::-webkit-scrollbar { display: none; }
+        .clock-scroller { display: inline-flex; gap: 20px; padding: 0 10px; }
+        .city-clock { display: flex; flex-direction: column; align-items: center; min-width: 80px; padding: 5px; background: rgba(255,255,255,0.1); border-radius: 8px; }
+        .city-name { font-size: 0.7rem; text-transform: uppercase; font-weight: 600; color: #bdc3c7; margin-bottom: 4px; }
+        .city-time { font-size: 1.1rem; font-weight: 700; font-feature-settings: "tnum"; color: #fff; }
+
+        /* --- BOTONES DE ACCIÓN --- */
+        .action-section {
+            text-align: center;
+            padding: 30px 20px;
+            background: #e0e6ed;
+            margin: 20px 0;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .btn-main {
+            background: var(--brand-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(44, 62, 80, 0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-main:hover { background: #34495e; transform: translateY(-2px); }
+        .btn-main.video-btn { background: #c0392b; } 
+        .btn-main.video-btn:hover { background: #a93226; }
+
+        /* --- NOTICIAS --- */
+        #news-grid { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; }
+        .newspaper-section { background: var(--card-bg); border-bottom: 1px solid var(--border); margin-top: 0; }
+        .section-header { padding: 12px 20px; background: #f8f9fa; border-bottom: 1px solid var(--border); font-weight: 700; font-size: 0.9rem; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
+        .section-badge { padding: 2px 8px; border-radius: 4px; color: white; font-size: 0.7rem; font-weight: bold; margin-right: 10px; min-width: 60px; text-align: center; }
+        .article-list { list-style: none; padding: 0; margin: 0; }
+        .article-item { display: flex; padding: 10px 20px; border-bottom: 1px solid #f0f0f0; gap: 15px; text-decoration: none; color: inherit; transition: background 0.1s; align-items: flex-start; }
+        .article-item:hover { background-color: #fafbfc; }
+        .article-thumb { width: 80px; height: 60px; object-fit: cover; border-radius: 4px; flex-shrink: 0; background-color: #eee; border: 1px solid #eee; }
+        .article-content { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
+        .article-headline { font-size: 0.95rem; font-weight: 600; color: var(--text-main); margin: 0 0 4px 0; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .article-meta { font-size: 0.75rem; color: var(--text-sub); margin-top: auto; }
+
+        /* --- VIDEOS --- */
+        #video-section { background: #111; color: #fff; padding-bottom: 40px; }
+        #video-section .section-header { background: #000; color: #fff; border-bottom: 1px solid #333; }
+        .video-card { background: #000; padding: 20px; margin: 20px; border-radius: 8px; border: 1px solid #333; }
+        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; background: #000; border-radius: 4px; margin-bottom: 15px; }
+        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+        .video-info { text-align: center; }
+        .video-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 15px; display: block; }
+        .btn-youtube-external { display: inline-block; background-color: #ff0000; color: white; text-decoration: none; padding: 8px 20px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; }
+        .btn-youtube-external:hover { background-color: #cc0000; }
+
+        /* --- MODALS --- */
+        dialog { border: none; border-radius: 12px; padding: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); width: 90%; max-width: 400px; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        dialog h2 { margin-top: 0; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem; }
+        .form-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+        .btn-cancel { background: #eee; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
+        .btn-save { background: var(--brand-color); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
+        
+        .status-msg { padding: 20px; text-align: center; font-size: 0.9rem; color: #666; font-style: italic; }
+        .error-msg { background: #fff5f5; color: #d63031; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <!-- SIN LOGO GRÁFICO, SOLO TEXTO -->
+        <div class="brand-text">
+            <h1>InformApp</h1>
+            <span class="subtitle">Plataforma Global de Información</span>
+        </div>
+    </header>
+
+    <section id="world-clock-section">
+        <div class="clock-scroller" id="clock-container"></div>
+    </section>
+
+    <main id="news-grid">
+        <!-- Noticias cargadas aquí -->
+    </main>
+
+    <!-- SECCIÓN AGREGAR RSS -->
+    <div class="action-section">
+        <button class="btn-main" id="btn-add-rss-modal">+ Agregar Diario (RSS)</button>
+    </div>
+
+    <!-- SECCIÓN DE VIDEOS -->
+    <section id="video-section">
+        <div class="section-header">
+            <div style="display:flex; align-items:center;">
+                <span class="section-badge" style="background:#ff0000">LIVE</span>
+                TV en Vivo (15 Canales)
+            </div>
+        </div>
+        <div id="video-container">
+            <!-- Videos cargados aquí -->
+        </div>
+    </section>
+
+    <!-- SECCIÓN AGREGAR VIDEOS -->
+    <div class="action-section" style="background: #2c3e50; color: white;">
+        <button class="btn-main video-btn" id="btn-add-video-modal">+ Agregar Transmisión en Vivo</button>
+    </div>
+
+    <!-- MODAL AGREGAR RSS -->
+    <dialog id="modal-rss">
+        <h2>Agregar Diario</h2>
+        <div class="form-group">
+            <label>Nombre del Diario</label>
+            <input type="text" id="rss-name" placeholder="ej. Clarín">
+        </div>
+        <div class="form-group">
+            <label>URL del Feed RSS</label>
+            <input type="text" id="rss-url" placeholder="https://...">
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancel" id="cancel-rss">Cancelar</button>
+            <button class="btn-save" id="save-rss">Guardar</button>
+        </div>
+    </dialog>
+
+    <!-- MODAL AGREGAR VIDEO -->
+    <dialog id="modal-video">
+        <h2>Agregar Video en Vivo</h2>
+        <div class="form-group">
+            <label>Título del Canal</label>
+            <input type="text" id="vid-title" placeholder="ej. Plaza Mayor Madrid">
+        </div>
+        <div class="form-group">
+            <label>Enlace de YouTube</label>
+            <input type="text" id="vid-url" placeholder="https://www.youtube.com/watch?v=...">
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancel" id="cancel-vid">Cancelar</button>
+            <button class="btn-save" id="save-vid">Agregar Video</button>
+        </div>
+    </dialog>
+
+    <script>
+        // --- CONFIGURACIÓN INICIAL ---
+
+        const DEFAULT_SOURCES = [
+            { name: 'Perfil', feedUrl: 'https://www.perfil.com/feed', color: '#004499' },
+            { name: 'Telesur', feedUrl: 'https://www.telesurtv.net/feed/', color: '#f37021' }
+        ];
+
+        // Lista de Videos Confirmada
+        const DEFAULT_VIDEOS = [
+            { title: 'Buenos Aires (En Vivo)', url: 'https://www.youtube.com/watch?v=rqBfiegG5qU' },
+            { title: 'El Zócalo, Mexico', url: 'https://www.youtube.com/watch?v=uV3wWHSvkfs' },
+            { title: 'Los Angeles', url: 'https://www.youtube.com/watch?v=3LXQWU67Ufk' },
+            { title: 'Santiago, Chile', url: 'https://www.youtube.com/watch?v=cAjWS3GsNSk' },
+            { title: 'Ibiza', url: 'https://www.youtube.com/watch?v=DuBAVRZVn2A' },
+            { title: 'Terremotos en vivo', url: 'https://www.youtube.com/watch?v=rvtygG4n6ew' },
+            { title: 'Planeta Tierra', url: 'https://www.youtube.com/watch?v=fO9e9jnhYK8' },
+            { title: 'ISS (Estación Espacial)', url: 'https://www.youtube.com/watch?v=80spGsrUrno' },
+            { title: 'Ushuaia', url: 'https://www.youtube.com/watch?v=yQnmSF2wYIA' },
+            { title: 'Tokyo', url: 'https://www.youtube.com/watch?v=zPfCPHQZvpw' },
+            { title: 'Desierto de Namibia', url: 'https://www.youtube.com/watch?v=ydYDqZQpim8' },
+            { title: 'Vaticano', url: 'https://www.youtube.com/watch?v=03pYP2Nmreo' },
+            { title: 'San Petersburgo', url: 'https://www.youtube.com/watch?v=h1wly909BYw' },
+            { title: 'Página12', url: 'https://www.youtube.com/watch?v=JrmCaXL5GZs' },
+            { title: 'Canal E', url: 'https://www.youtube.com/watch?v=tytTT629brE' }
+        ];
+
+        // Cargar desde LocalStorage o usar Defaults
+        let sources = JSON.parse(localStorage.getItem('informApp_sources')) || DEFAULT_SOURCES;
+        let videos = JSON.parse(localStorage.getItem('informApp_videos')) || DEFAULT_VIDEOS;
+
+        const CITIES = [
+            { name: 'Buenos Aires', tz: 'America/Argentina/Buenos_Aires' },
+            { name: 'Sao Paulo', tz: 'America/Sao_Paulo' },
+            { name: 'La Habana', tz: 'America/Havana' },
+            { name: 'Tokyo', tz: 'Asia/Tokyo' },
+            { name: 'Johannesburgo', tz: 'Africa/Johannesburg' },
+            { name: 'Casa Blanca', tz: 'Africa/Casablanca' },
+            { name: 'Madrid', tz: 'Europe/Madrid' },
+            { name: 'La Haya', tz: 'Europe/Amsterdam' },
+            { name: 'Oslo', tz: 'Europe/Oslo' },
+            { name: 'Toronto', tz: 'America/Toronto' },
+            { name: 'Sidney', tz: 'Australia/Sydney' },
+            { name: 'Shangai', tz: 'Asia/Shanghai' }
+        ];
+
+        // --- LÓGICA DE RELOJES ---
+        function initClocks() {
+            const container = document.getElementById('clock-container');
+            container.innerHTML = '';
+            CITIES.forEach(city => {
+                const el = document.createElement('div');
+                el.className = 'city-clock';
+                el.innerHTML = `<span class="city-name">${city.name}</span><span class="city-time" data-tz="${city.tz}">--:--</span>`;
+                container.appendChild(el);
+            });
+            updateClocks();
+            setInterval(updateClocks, 1000);
+        }
+
+        function updateClocks() {
+            const now = new Date();
+            document.querySelectorAll('.city-time').forEach(el => {
+                const tz = el.getAttribute('data-tz');
+                try {
+                    el.textContent = new Intl.DateTimeFormat('es-ES', {
+                        hour: '2-digit', minute: '2-digit', timeZone: tz, hour12: false
+                    }).format(now);
+                } catch (e) { el.textContent = "Err"; }
+            });
+        }
+
+        // --- LÓGICA DE NOTICIAS ---
+        const newsGrid = document.getElementById('news-grid');
+
+        async function fetchAndRender() {
+            newsGrid.innerHTML = '';
+            for (const source of sources) {
+                const section = document.createElement('section');
+                section.className = 'newspaper-section';
+                const color = source.color || '#' + Math.floor(Math.random()*16777215).toString(16);
+                
+                section.innerHTML = `
+                    <div class="section-header">
+                        <div style="display:flex; align-items:center;">
+                            <span class="section-badge" style="background:${color}">RSS</span>
+                            ${source.name}
+                        </div>
+                        <button class="btn-cancel" onclick="removeSource('${source.feedUrl}')" style="font-size:0.8rem; padding:4px 8px; color:#d63031; background:none; border:none; cursor:pointer;">Eliminar</button>
+                    </div>
+                    <ul class="article-list"><li class="status-msg">Conectando...</li></ul>
+                `;
+                newsGrid.appendChild(section);
+
+                try {
+                    const data = await fetchRSS(source.feedUrl);
+                    renderCompactList(section.querySelector('.article-list'), data);
+                    section.querySelector('.article-list').previousElementSibling.querySelector('.loading-indicator')?.remove();
+                } catch (error) {
+                    section.querySelector('.article-list').innerHTML = `<li class="status-msg error-msg">Error cargando ${source.name}. URL inválida o bloqueada.</li>`;
+                }
+            }
+        }
+
+        async function fetchRSS(url) {
+            const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`);
+            const json = await res.json();
+            return json.status === 'ok' ? processItems(json.items) : [];
+        }
+
+        function processItems(items) {
+            return items.slice(0, 10).map(item => {
+                let img = item.thumbnail;
+                if (!img) {
+                    const doc = new DOMParser().parseFromString(item.description, 'text/html');
+                    const tag = doc.querySelector('img');
+                    if (tag) img = tag.src;
+                }
+                return { title: item.title.replace(/<[^>]*>?/gm, ''), link: item.link, date: new Date(item.pubDate), image: img };
+            });
+        }
+
+        function renderCompactList(list, items) {
+            list.innerHTML = '';
+            items.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <a href="${item.link}" target="_blank" class="article-item">
+                        <img src="${item.image || 'https://picsum.photos/seed/n/100/100'}" class="article-thumb" loading="lazy" onerror="this.src='https://via.placeholder.com/80x60?text=IMG'">
+                        <div class="article-content">
+                            <h3 class="article-headline">${item.title}</h3>
+                            <div class="article-meta">${timeAgo(item.date)}</div>
+                        </div>
+                    </a>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        function timeAgo(date) {
+            const s = Math.floor((new Date() - date) / 1000);
+            if (s > 31536000) return Math.floor(s/31536000) + " años";
+            if (s > 2592000) return Math.floor(s/2592000) + " meses";
+            if (s > 86400) return Math.floor(s/86400) + " días";
+            if (s > 3600) return Math.floor(s/3600) + "h";
+            if (s > 60) return Math.floor(s/60) + "m";
+            return "Ahora";
+        }
+
+        function removeSource(url) {
+            if(confirm("¿Eliminar este diario?")) {
+                sources = sources.filter(s => s.feedUrl !== url);
+                saveData();
+                fetchAndRender();
+            }
+        }
+
+        // --- LÓGICA DE VIDEOS ---
+        function renderVideos() {
+            const container = document.getElementById('video-container');
+            container.innerHTML = '';
+            videos.forEach(vid => {
+                const videoId = extractVideoID(vid.url);
+                if (!videoId) return;
+                const card = document.createElement('div');
+                card.className = 'video-card';
+                card.innerHTML = `
+                    <div class="video-wrapper">
+                        <iframe src="https://www.youtube.com/embed/${videoId}" title="${vid.title}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-info">
+                        <span class="video-title">${vid.title}</span>
+                        <div style="margin-top:10px;">
+                            <a href="${vid.url}" target="_blank" class="btn-youtube-external">Ver en YouTube</a>
+                            <button onclick="removeVideo('${vid.url}')" style="background:none; border:none; color:#666; font-size:0.8rem; margin-left:15px; cursor:pointer;">[Quitar]</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function extractVideoID(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        function removeVideo(url) {
+            if(confirm("¿Eliminar este video?")) {
+                videos = videos.filter(v => v.url !== url);
+                saveData();
+                renderVideos();
+            }
+        }
+
+        // --- GESTIÓN DE DATOS Y MODALES ---
+        function saveData() {
+            localStorage.setItem('informApp_sources', JSON.stringify(sources));
+            localStorage.setItem('informApp_videos', JSON.stringify(videos));
+        }
+
+        const modalRss = document.getElementById('modal-rss');
+        const modalVid = document.getElementById('modal-video');
+
+        document.getElementById('btn-add-rss-modal').onclick = () => modalRss.showModal();
+        document.getElementById('btn-add-video-modal').onclick = () => modalVid.showModal();
+        
+        document.getElementById('cancel-rss').onclick = () => modalRss.close();
+        document.getElementById('cancel-vid').onclick = () => modalVid.close();
+
+        document.getElementById('save-rss').onclick = () => {
+            const name = document.getElementById('rss-name').value.trim();
+            const url = document.getElementById('rss-url').value.trim();
+            if(name && url) {
+                sources.push({ name, feedUrl: url, color: '#333' });
+                saveData();
+                fetchAndRender();
+                modalRss.close();
+                document.getElementById('rss-name').value = '';
+                document.getElementById('rss-url').value = '';
+                alert('Diario agregado.');
+            } else {
+                alert('Completa ambos campos.');
+            }
+        };
+
+        document.getElementById('save-vid').onclick = () => {
+            const title = document.getElementById('vid-title').value.trim();
+            const url = document.getElementById('vid-url').value.trim();
+            const id = extractVideoID(url);
+            
+            if(title && id) {
+                videos.push({ title, url });
+                saveData();
+                renderVideos();
+                modalVid.close();
+                document.getElementById('vid-title').value = '';
+                document.getElementById('vid-url').value = '';
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            } else {
+                alert('Título y URL válida de YouTube requeridos.');
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initClocks();
+            fetchAndRender();
+            renderVideos();
+        });
+
+    </script>
+</body>
+</html>
